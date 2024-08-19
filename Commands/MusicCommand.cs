@@ -1,4 +1,5 @@
 ﻿using dsbot.Validators;
+using dsBot.Helpers;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -62,17 +63,6 @@ public class MusicCommand : BaseCommandModule
 
         await connection.PlayAsync(musicTrack);
 
-        string trackDilates = $"Now playing: {musicTrack.Title} \n" +
-            $"Url: {musicTrack.Uri} \n" +
-            $"Length: {musicTrack.Length}";
-
-        var nowPlaying = new DiscordEmbedBuilder()
-        {
-            Color = DiscordColor.Purple,
-            Title = $"joined channel {userVC.Name}",
-            Description = trackDilates
-        };
-
-        await context.Channel.SendMessageAsync(embed: nowPlaying);
+        await FeedBackMusic.SendNowPlayTrack(context, musicTrack);
     }
 }
