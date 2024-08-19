@@ -6,9 +6,10 @@ namespace dsbot.Commands;
 public class TestCommands : BaseCommandModule
 {
     [Command("hello")]
-    public async Task Test(CommandContext context)
+
+    public Task SayHello(CommandContext context)
     {
-        await context.Channel
+        return context.Channel
             .SendMessageAsync($"Hello {context.User.Username}");
     }
 }

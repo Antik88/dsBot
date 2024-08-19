@@ -2,6 +2,8 @@
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Lavalink;
+using DSharpPlus.Net;
 
 namespace dsbot;
 
@@ -38,8 +40,26 @@ class Program
 
         Commands.RegisterCommands<TestCommands>();
         Commands.RegisterCommands<AnimeGrilCommand>();
+        Commands.RegisterCommands<MusicCommand>();
+
+        var endpoint = new ConnectionEndpoint
+        {
+            Hostname = "lava-v3.ajieblogs.eu.org",
+            Port = 443,
+            Secured = true,
+        };
+
+        var lavaLinkConfiguration = new LavalinkConfiguration()
+        {
+            Password = "https://dsc.gg/ajidevserver",
+            RestEndpoint = endpoint,
+            SocketEndpoint = endpoint,
+        };
+
+        var lavaLink = Client.UseLavalink();
 
         await Client.ConnectAsync();
+        await lavaLink.ConnectAsync(lavaLinkConfiguration);
         await Task.Delay(-1);
     }
 
