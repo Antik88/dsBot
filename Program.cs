@@ -56,6 +56,7 @@ class Program
         Commands.RegisterCommands<TestCommands>();
         Commands.RegisterCommands<AnimeGrilCommand>();
         Commands.RegisterCommands<MusicCommand>();
+        Commands.RegisterCommands<PauseCommand>();
 
         var endpoint = new ConnectionEndpoint
         {
