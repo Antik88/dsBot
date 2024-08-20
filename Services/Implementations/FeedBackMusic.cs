@@ -1,13 +1,13 @@
+using dsbot.Services.Interfaces;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
 
-namespace dsBot.Helpers;
+namespace dsbot.Services.Implementations;
 
-public static class FeedBackMusic
+public class FeedBackMusic : IFeedBack
 {
-    public static async Task SendNowPlayTrack(CommandContext context,
-        LavalinkTrack musicTrack)
+    public Task SendNowPlayTrack(CommandContext context, LavalinkTrack musicTrack)
     {
         string trackDilates = $"Now playing: {musicTrack.Title} \n" +
             $"Url: {musicTrack.Uri} \n" +
@@ -20,6 +20,6 @@ public static class FeedBackMusic
             Description = trackDilates
         };
 
-        await context.Channel.SendMessageAsync(embed: nowPlaying);
+        return context.Channel.SendMessageAsync(embed: nowPlaying);
     }
 }

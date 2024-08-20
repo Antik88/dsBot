@@ -1,8 +1,7 @@
-﻿using dsbot.Validators;
-using dsBot.Helpers;
+﻿using dsbot.Services.Interfaces;
+using dsbot.Validators;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
 
 namespace dsbot.Commands;
@@ -13,7 +12,7 @@ public class PlayMusicRequest
     public string Query { get; set; } = string.Empty;
 }
 
-public class MusicCommand : BaseCommandModule
+public class MusicCommand(IFeedBack feedBack) : BaseCommandModule
 {
     [Command("track")]
     public async Task PlayMusic(CommandContext context,
@@ -63,6 +62,6 @@ public class MusicCommand : BaseCommandModule
 
         await connection.PlayAsync(musicTrack);
 
-        await FeedBackMusic.SendNowPlayTrack(context, musicTrack);
+        await feedBack.SendNowPlayTrack(context, musicTrack);
     }
 }

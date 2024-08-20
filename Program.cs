@@ -1,9 +1,13 @@
 ﻿using dsbot.Commands;
+using dsbot.Services.Implementations;
+using dsbot.Services.Interfaces;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Lavalink;
 using DSharpPlus.Net;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace dsbot;
 
@@ -13,6 +17,16 @@ class Program
     private static CommandsNextExtension? Commands { get; set; }
     static async Task Main(string[] args)
     {
+        IHost _host = Host.CreateDefaultBuilder().ConfigureServices(
+            services =>
+            {
+                services.AddSingleton<IApplication, Application>();      
+                services.AddScoped<IFeedBack, FeedBackMusic>();      
+            })
+            .Build();
+
+        var app = _host.Services.GetRequiredService<IApplication>();
+
         var settings = new Settings();
         await settings.ReadSettings();
 
@@ -34,6 +48,7 @@ class Program
             EnableMentionPrefix = true,
             EnableDms = true,
             EnableDefaultHelp = false,
+            Services = _host.Services
         };
 
         Commands = Client.UseCommandsNext(commandsConfig);
@@ -61,6 +76,8 @@ class Program
         await Client.ConnectAsync();
         await lavaLink.ConnectAsync(lavaLinkConfiguration);
         await Task.Delay(-1);
+
+        app.Run();
     }
 
     private static Task Client_Ready(DiscordClient sender, ReadyEventArgs args) 
