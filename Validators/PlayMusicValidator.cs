@@ -2,6 +2,7 @@
 using DSharpPlus.Lavalink;
 using DSharpPlus;
 using FluentValidation;
+using dsbot.Helpers;
 
 namespace dsbot.Validators;
 

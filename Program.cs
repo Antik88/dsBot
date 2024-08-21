@@ -6,6 +6,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Lavalink;
 using DSharpPlus.Net;
+using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -40,7 +41,9 @@ class Program
 
         Client = new DiscordClient(dsConfig);
 
-        Client.Ready += Client_Ready;   
+        Client.Ready += Client_Ready;
+
+        Client.UseVoiceNext();
 
         var commandsConfig = new CommandsNextConfiguration()
         {
@@ -55,8 +58,10 @@ class Program
 
         Commands.RegisterCommands<TestCommands>();
         Commands.RegisterCommands<AnimeGrilCommand>();
-        Commands.RegisterCommands<MusicCommand>();
+        //Commands.RegisterCommands<MusicCommand>();
         Commands.RegisterCommands<PauseCommand>();
+        
+        Commands.RegisterCommands<PlayFromFFmpegCommand>();
 
         var endpoint = new ConnectionEndpoint
         {

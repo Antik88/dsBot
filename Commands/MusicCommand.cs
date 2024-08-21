@@ -1,16 +1,11 @@
-﻿using dsbot.Services.Interfaces;
+﻿using dsbot.Helpers;
+using dsbot.Services.Interfaces;
 using dsbot.Validators;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Lavalink;
 
 namespace dsbot.Commands;
-
-public class PlayMusicRequest
-{
-    public CommandContext Context { get; set; }
-    public string Query { get; set; } = string.Empty;
-}
 
 public class MusicCommand(IFeedBack feedBack) : BaseCommandModule
 {
