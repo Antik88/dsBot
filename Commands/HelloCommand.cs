@@ -3,7 +3,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace dsbot.Commands;
 
-public class TestCommands : BaseCommandModule
+public class HelloCommand : BaseCommandModule
 {
     [Command("hello")]
 

@@ -4,8 +4,6 @@ using dsbot.Services.Interfaces;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
-using DSharpPlus.Lavalink;
-using DSharpPlus.Net;
 using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -41,7 +39,7 @@ class Program
 
         Client = new DiscordClient(dsConfig);
 
-        Client.Ready += Client_Ready;
+        Client.Ready += ClientReady;
 
         Client.UseVoiceNext();
 
@@ -56,37 +54,18 @@ class Program
 
         Commands = Client.UseCommandsNext(commandsConfig);
 
-        Commands.RegisterCommands<TestCommands>();
         Commands.RegisterCommands<AnimeGrilCommand>();
-        //Commands.RegisterCommands<MusicCommand>();
-        Commands.RegisterCommands<PauseCommand>();
-        
-        Commands.RegisterCommands<PlayFromFFmpegCommand>();
-
-        var endpoint = new ConnectionEndpoint
-        {
-            Hostname = "lava-v3.ajieblogs.eu.org",
-            Port = 443,
-            Secured = true,
-        };
-
-        var lavaLinkConfiguration = new LavalinkConfiguration()
-        {
-            Password = "https://dsc.gg/ajidevserver",
-            RestEndpoint = endpoint,
-            SocketEndpoint = endpoint,
-        };
-
-        var lavaLink = Client.UseLavalink();
+        Commands.RegisterCommands<HelloCommand>();
+        Commands.RegisterCommands<LeaveCommand>();
+        Commands.RegisterCommands<PlayCommand>();
 
         await Client.ConnectAsync();
-        await lavaLink.ConnectAsync(lavaLinkConfiguration);
         await Task.Delay(-1);
 
         app.Run();
     }
 
-    private static Task Client_Ready(DiscordClient sender, ReadyEventArgs args) 
+    private static Task ClientReady(DiscordClient sender, ReadyEventArgs args) 
     {
         return Task.CompletedTask;
     }

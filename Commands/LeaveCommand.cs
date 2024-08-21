@@ -7,11 +7,20 @@ namespace dsbot.Commands;
 public class LeaveCommand : BaseCommandModule
 {
     [Command("leave")]
-    public async Task Leave(CommandContext context) 
+    public async Task Leave(CommandContext ctx)
     {
-        var vnext = context.Client.GetVoiceNext();
-        var connection = vnext.GetConnection(context.Guild);
+        var vnext = ctx.Client.GetVoiceNext();
+        var connection = vnext.GetConnection(ctx.Guild);
 
-        connection.Disconnect();
+        if (connection != null)
+        {
+            connection.Disconnect();
+            await ctx.RespondAsync("Disconnected from the voice channel.");
+        }
+        else
+        {
+            await ctx.RespondAsync("I'm not connected to a voice channel.");
+        }
     }
+
 }
