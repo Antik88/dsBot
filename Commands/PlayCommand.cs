@@ -7,18 +7,45 @@ namespace dsbot.Commands
 {
     public class PlayCommand : BaseCommandModule
     {
+        private readonly Queue<string> _playQueue = new();
+        private bool _isPlaying = false;
+
         [Command("play")]
         public async Task Play(CommandContext context, [RemainingText] string videoUrl)
         {
             var channel = context.Member.VoiceState?.Channel;
 
-            var connection = await channel.ConnectAsync();
-            var vnext = context.Client.GetVoiceNext();
+            var voiceNext = context.Client.GetVoiceNext();
+            var connection = voiceNext.GetConnection(context.Guild);
+
+            connection ??= await channel.ConnectAsync();
+
             var transmit = connection.GetTransmitSink();
 
+            _playQueue.Enqueue(videoUrl);
+            await context.Channel.SendMessageAsync($"Track added to queue \n Queue place #{_playQueue.Count}");
+
+            if (!_isPlaying)
+            {
+                _isPlaying = true;
+                await PlayNextTrack(transmit);
+            }
+        }
+
+        private async Task PlayNextTrack(VoiceTransmitSink transmit)
+        {
+            if (_playQueue.Count == 0)
+            {
+                _isPlaying = false;
+                return;
+            }
+
+            var videoUrl = _playQueue.Dequeue();
             var audioStreamUrl = await GetAudioStreamUrl(videoUrl);
 
             await PlayAudio(audioStreamUrl, transmit);
+
+            await PlayNextTrack(transmit);
         }
 
         private async Task<string> GetAudioStreamUrl(string videoUrl)
@@ -38,7 +65,8 @@ namespace dsbot.Commands
             process.Start();
 
             var output = await process.StandardOutput.ReadToEndAsync();
-            return output;
+            await process.WaitForExitAsync();
+            return output.Trim();
         }
 
         private async Task PlayAudio(string audioStreamUrl, VoiceTransmitSink transmit)
@@ -56,55 +84,19 @@ namespace dsbot.Commands
 
             using var process = new Process { StartInfo = startInfo };
 
-            int retryCount = 0;
-            const int maxRetries = 3;
+            process.Start();
 
-            try
+            _ = Task.Run(async () =>
             {
-                while (retryCount < maxRetries)
+                string errorOutput = await process.StandardError.ReadToEndAsync();
+                if (!string.IsNullOrEmpty(errorOutput))
                 {
-                    process.Start();
-
-                    _ = Task.Run(async () =>
-                    {
-                        string errorOutput = await process.StandardError.ReadToEndAsync();
-                        if (!string.IsNullOrEmpty(errorOutput))
-                        {
-                            Console.WriteLine($"FFmpeg error: {errorOutput}");
-                            throw new Exception(errorOutput);
-                        }
-                    });
-
-                    try
-                    {
-                        await process.StandardOutput.BaseStream.CopyToAsync(transmit);
-                        await process.WaitForExitAsync();
-
-                        if (process.ExitCode != 0)
-                        {
-                            throw new Exception("FFmpeg exited with a non-zero code.");
-                        }
-
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error during audio playback: {ex.Message}");
-                        retryCount++;
-
-                        if (retryCount >= maxRetries)
-                        {
-                            throw new Exception("Maximum retry limit reached, unable to continue playback.");
-                        }
-
-                        Console.WriteLine("Retrying playback...");
-                    }
+                    throw new Exception(errorOutput);
                 }
-            }
-            finally
-            {
-                await transmit.FlushAsync();
-            }
+            });
+
+            await process.StandardOutput.BaseStream.CopyToAsync(transmit);
+            await process.WaitForExitAsync();
         }
     }
 }
