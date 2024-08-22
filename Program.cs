@@ -1,10 +1,12 @@
 ﻿using dsbot.Commands;
+using dsbot.HttpClients;
 using dsbot.Services.Implementations;
 using dsbot.Services.Interfaces;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.VoiceNext;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -20,7 +22,14 @@ class Program
             services =>
             {
                 services.AddSingleton<IApplication, Application>();      
-                services.AddScoped<IFeedBack, FeedBackMusic>();      
+                services.AddScoped<IFeedBack, FeedBackMusic>();
+
+                services.AddScoped(typeof(IExternalServiceRequests<>), typeof(ExternalServiceRequests<>));
+
+                services.AddHttpClient<IAnimeHttpClient, AnimeApiHttpClient>(client =>
+                {
+                    client.BaseAddress = new Uri("https://api.waifu.pics/sfw/waifu");
+                });
             })
             .Build();
 
@@ -54,7 +63,7 @@ class Program
 
         Commands = Client.UseCommandsNext(commandsConfig);
 
-        Commands.RegisterCommands<AnimeGrilCommand>();
+        Commands.RegisterCommands<AnimeGirlCommand>();
         Commands.RegisterCommands<HelloCommand>();
         Commands.RegisterCommands<LeaveCommand>();
         Commands.RegisterCommands<PlayCommand>();
