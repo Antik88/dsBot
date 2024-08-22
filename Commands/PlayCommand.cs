@@ -2,6 +2,7 @@
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.VoiceNext;
 using System.Diagnostics;
+using YoutubeSearchApi.Net.Services;
 
 namespace dsbot.Commands
 {
@@ -11,8 +12,9 @@ namespace dsbot.Commands
         private bool _isPlaying = false;
 
         [Command("play")]
-        public async Task Play(CommandContext context, [RemainingText] string videoUrl)
+        public async Task Play(CommandContext context, [RemainingText] string query)
         {
+            //try join method   
             var channel = context.Member.VoiceState?.Channel;
 
             var voiceNext = context.Client.GetVoiceNext();
@@ -22,7 +24,15 @@ namespace dsbot.Commands
 
             var transmit = connection.GetTransmitSink();
 
-            _playQueue.Enqueue(videoUrl);
+            using (var httpClient = new HttpClient())
+            {
+                YoutubeSearchClient client = new (httpClient);
+
+                var responseObject = await client.SearchAsync(query);
+
+                _playQueue.Enqueue(responseObject.Results.First().Url);
+            }
+
             await context.Channel.SendMessageAsync($"Track added to queue \n Queue place #{_playQueue.Count}");
 
             if (!_isPlaying)

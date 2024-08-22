@@ -1,8 +1,7 @@
 using dsbot.HttpClients;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using Newtonsoft.Json.Linq;
-using System.Text.Json.Serialization;
+using System.Text.Json.Nodes;
 
 namespace dsbot.Commands;
 
@@ -11,14 +10,8 @@ public class AnimeGirlCommand(IExternalServiceRequests<IAnimeHttpClient> animeSe
     [Command("girl")]
     public async Task Test(CommandContext context)
     {
-        //using HttpClient client = new();
-        //var response = await client.GetAsync("https://api.waifu.pics/sfw/waifu");
+        var content = await animeService.GetFromService<JsonObject>("");
 
-        //var content = await response.Content.ReadAsStringAsync();
-
-        var content = await animeService.GetFromService<JObject>("");
-
-        //var json = JObject.Parse(content);
         var imageUrl = content["url"]?.ToString();
 
         await context.Channel.SendMessageAsync(imageUrl);
