@@ -22,8 +22,11 @@ class Program
         IHost _host = Host.CreateDefaultBuilder().ConfigureServices(
             services =>
             {
-                services.AddSingleton<IApplication, Application>();      
+                services.AddSingleton<IApplication, Application>();
+                services.AddSingleton<IAudioService, AudioService>();
+
                 services.AddScoped<IConnectionService, ConnectionService>();
+                services.AddScoped<IFeedBack, FeedBack>();
                 services.AddScoped(typeof(IExternalServiceRequests<>), typeof(ExternalServiceRequests<>));
 
                 services.AddHttpClient<IAnimeHttpClient, AnimeApiHttpClient>(client =>
