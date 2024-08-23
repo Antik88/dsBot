@@ -36,4 +36,31 @@ public class FeedBack : IFeedBack
 
         return context.Channel.SendMessageAsync(embed: nowPlaying);
     }
+
+    public Task PausePlaying(CommandContext context)
+    {
+        return context.Channel.SendMessageAsync(embed: new DiscordEmbedBuilder()
+        {
+            Color = DiscordColor.DarkBlue,
+            Title = "Paused"
+        });
+    }
+
+    public Task ResumePlaying(CommandContext context)
+    {
+        return context.Channel.SendMessageAsync(embed: new DiscordEmbedBuilder()
+        {
+            Color = DiscordColor.DarkGreen,
+            Title = "Resume"
+        });
+    }
+
+    public Task Skip(CommandContext context, YoutubeVideo currentPlay)
+    {
+        return context.Channel.SendMessageAsync(embed: new DiscordEmbedBuilder()
+        {
+            Color = DiscordColor.DarkGray,
+            Title = $"{currentPlay.Title} skipped."
+        });
+    }
 }

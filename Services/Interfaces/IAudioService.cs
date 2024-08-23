@@ -12,4 +12,5 @@ public interface IAudioService
     Task Skip();
     Task Pause();
     Task Resume();
+    YoutubeVideo GetCurrentTrack();
 }

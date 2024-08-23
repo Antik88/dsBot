@@ -11,7 +11,12 @@ public class AudioService(IFeedBack feedBack) : IAudioService
 {
     private readonly Queue<YoutubeVideo> _playQueue = new();
     private bool _isPlaying = false;
+    private bool _isPaused = false;
     private VoiceTransmitSink _transmit;
+    private TaskCompletionSource<bool> _pauseCompletionSource;
+    private TaskCompletionSource<bool> _skipCompletionSource;
+    private YoutubeVideo _currentTrack;
+    private Process _ffmpegProcess;
 
     public void SetTransmitSink(VoiceTransmitSink transmit)
     {
@@ -39,8 +44,11 @@ public class AudioService(IFeedBack feedBack) : IAudioService
         var video = _playQueue.Dequeue();
 
         await feedBack.NowPlaying(context, video);
+        _currentTrack = video;
 
         var audioStreamUrl = await GetAudioStreamUrl(video.Url);
+
+        _skipCompletionSource = new TaskCompletionSource<bool>();
 
         await PlayAudio(audioStreamUrl, _transmit);
 
@@ -68,7 +76,7 @@ public class AudioService(IFeedBack feedBack) : IAudioService
         return output.Trim();
     }
 
-    private static async Task PlayAudio(string audioStreamUrl, VoiceTransmitSink transmit)
+    private async Task PlayAudio(string audioStreamUrl, VoiceTransmitSink transmit)
     {
         var ffmpegPath = ProgramsPath.ffmpeg;
         var startInfo = new ProcessStartInfo
@@ -81,21 +89,40 @@ public class AudioService(IFeedBack feedBack) : IAudioService
             CreateNoWindow = true,
         };
 
-        using var process = new Process { StartInfo = startInfo };
-
-        process.Start();
+        _ffmpegProcess = new Process { StartInfo = startInfo };
+        _ffmpegProcess.Start();
 
         _ = Task.Run(async () =>
         {
-            string errorOutput = await process.StandardError.ReadToEndAsync();
+            string errorOutput = await _ffmpegProcess.StandardError.ReadToEndAsync();
             if (!string.IsNullOrEmpty(errorOutput))
             {
                 throw new Exception(errorOutput);
             }
         });
 
-        await process.StandardOutput.BaseStream.CopyToAsync(transmit);
-        await process.WaitForExitAsync();
+        _pauseCompletionSource = new TaskCompletionSource<bool>();
+
+        using var audioStream = _ffmpegProcess.StandardOutput.BaseStream;
+        var buffer = new byte[4096];
+        int bytesRead;
+
+        while ((bytesRead = await audioStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+        {
+            if (_isPaused)
+            {
+                await _pauseCompletionSource.Task;
+            }
+
+            if (_skipCompletionSource.Task.IsCompleted)
+            {
+                break;
+            }
+
+            await transmit.WriteAsync(buffer.AsMemory(0, bytesRead));
+        }
+
+        await _ffmpegProcess.WaitForExitAsync();
     }
 
     public int GetQueueCount()
@@ -103,15 +130,42 @@ public class AudioService(IFeedBack feedBack) : IAudioService
         return _playQueue.Count;
     }
 
-    public async Task Pause()
+    public Task Pause()
     {
+        if (_isPlaying && !_isPaused)
+        {
+            _isPaused = true;
+            _pauseCompletionSource = new TaskCompletionSource<bool>();
+        }
+        return Task.CompletedTask;
     }
 
-    public async Task Resume()
+    public Task Resume()
     {
+        if (_isPlaying && _isPaused)
+        {
+            _isPaused = false;
+            _pauseCompletionSource.TrySetResult(true);
+        }
+        return Task.CompletedTask;
     }
 
-    public async Task Skip()
+    public Task Skip()
     {
+        if (_isPlaying)
+        {
+            _skipCompletionSource.TrySetResult(true);
+
+            if (_ffmpegProcess != null && !_ffmpegProcess.HasExited)
+            {
+                _ffmpegProcess.Kill();
+            }
+        }
+        return Task.CompletedTask;
+    }
+
+    public YoutubeVideo GetCurrentTrack()
+    {
+        return _currentTrack;
     }
 }
