@@ -4,9 +4,9 @@
  - [x] Set up normal HttpClient for anime api
  - [x] Give normal feedback 
  - [x] Track queue 
- - [ ] Skip track 
- - [ ] Pause track 
- - [ ] Track by link track option 
+ - [x] Skip track 
+ - [x] Pause track 
+ - [ ] Track by link option 
  - [x] Processing end of track
  - [x] Disconnect bot 
  - [x] Post anime girl 
