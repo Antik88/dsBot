@@ -1,6 +1,5 @@
 ﻿using dsbot.Commands;
 using dsbot.Constants;
-using dsbot.Helpers;
 using dsbot.HttpClients;
 using dsbot.Services.Implementations;
 using dsbot.Services.Interfaces;
@@ -38,13 +37,15 @@ class Program
 
         var app = _host.Services.GetRequiredService<IApplication>();
 
-        var settings = new Settings();
-        await settings.ReadSettings();
+        DotNetEnv.Env.TraversePath().Load();
+
+        var token = DotNetEnv.Env.GetString("TOKEN");
+        var prefix = DotNetEnv.Env.GetString("PREFIX");
 
         var dsConfig = new DiscordConfiguration()
         {
             Intents = DiscordIntents.All,
-            Token = settings.Token,
+            Token = token,
             TokenType = TokenType.Bot,
             AutoReconnect = true,
         };
@@ -57,7 +58,7 @@ class Program
 
         var commandsConfig = new CommandsNextConfiguration()
         {
-            StringPrefixes = [settings.Prefix],
+            StringPrefixes = [prefix],
             EnableMentionPrefix = true,
             EnableDms = true,
             EnableDefaultHelp = false,
