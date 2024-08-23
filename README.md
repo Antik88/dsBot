@@ -1,12 +1,12 @@
 ﻿**TODO:**
  - [x] Add DI
- - [ ] Implement audio service
- - [ ] Set up normal HttpClient for anime api
- - [ ] Give normal feedback 
+ - [x] Implement audio service
+ - [x] Set up normal HttpClient for anime api
+ - [x] Give normal feedback 
  - [x] Track queue 
  - [ ] Skip track 
  - [ ] Pause track 
- - [ ] Search track option 
+ - [ ] Track by link track option 
  - [x] Processing end of track
  - [x] Disconnect bot 
  - [x] Post anime girl 
