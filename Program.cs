@@ -1,4 +1,6 @@
 ﻿using dsbot.Commands;
+using dsbot.Constants;
+using dsbot.Helpers;
 using dsbot.HttpClients;
 using dsbot.Services.Implementations;
 using dsbot.Services.Interfaces;
@@ -21,13 +23,12 @@ class Program
             services =>
             {
                 services.AddSingleton<IApplication, Application>();      
-                services.AddScoped<IFeedBack, FeedBackMusic>();
-
+                services.AddScoped<IConnectionService, ConnectionService>();
                 services.AddScoped(typeof(IExternalServiceRequests<>), typeof(ExternalServiceRequests<>));
 
                 services.AddHttpClient<IAnimeHttpClient, AnimeApiHttpClient>(client =>
                 {
-                    client.BaseAddress = new Uri("https://api.waifu.pics/sfw/waifu");
+                    client.BaseAddress = new Uri(BaseUrl.AnimeApi);
                 });
             })
             .Build();

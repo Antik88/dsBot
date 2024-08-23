@@ -1,26 +1,14 @@
 ﻿using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.VoiceNext;
+using dsbot.Services.Interfaces;
 
 namespace dsbot.Commands;
 
-public class LeaveCommand : BaseCommandModule
+public class LeaveCommand(IConnectionService connectionService) : BaseCommandModule
 {
     [Command("leave")]
-    public async Task Leave(CommandContext ctx)
+    public Task Leave(CommandContext context)
     {
-        var vnext = ctx.Client.GetVoiceNext();
-        var connection = vnext.GetConnection(ctx.Guild);
-
-        if (connection != null)
-        {
-            connection.Disconnect();
-            await ctx.RespondAsync("Disconnected from the voice channel.");
-        }
-        else
-        {
-            await ctx.RespondAsync("I'm not connected to a voice channel.");
-        }
+        return connectionService.DisconnectFromChannel(context);
     }
-
 }

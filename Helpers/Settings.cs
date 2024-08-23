@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace dsbot;
+namespace dsbot.Helpers;
 
 public class Settings
 {
@@ -16,13 +16,13 @@ public class Settings
 
         SettingsStucture settingsStucture = JsonConvert.DeserializeObject<SettingsStucture>(json);
 
-        this.Token = settingsStucture.Token;
-        this.Prefix = settingsStucture.Prefix;
+        Token = settingsStucture.Token;
+        Prefix = settingsStucture.Prefix;
     }
 
     internal sealed class SettingsStucture
     {
         public string Token { get; set; } = string.Empty;
-        public string Prefix { get; set; } = string.Empty;    
+        public string Prefix { get; set; } = string.Empty;
     }
 }
