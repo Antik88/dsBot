@@ -6,7 +6,7 @@ namespace dsbot.Commands;
 
 public class PauseCommand(IAudioService audioService, IFeedBack feedBack) : BaseCommandModule 
 {
-    [Command("pause")]
+    [Command(Constants.Commands.Pause)]
     public Task Pause(CommandContext context)
     {
         feedBack.PausePlaying(context);

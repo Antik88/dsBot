@@ -6,7 +6,7 @@ namespace dsbot.Commands;
 
 public class LeaveCommand(IConnectionService connectionService) : BaseCommandModule
 {
-    [Command("leave")]
+    [Command(Constants.Commands.Leave)]
     public Task Leave(CommandContext context)
     {
         return connectionService.DisconnectFromChannel(context);

@@ -6,7 +6,7 @@ namespace dsbot.Commands;
 
 public class SkipCommand(IAudioService audioService, IFeedBack feedBack) : BaseCommandModule
 {
-    [Command("skip")]
+    [Command(Constants.Commands.Skip)]
     public Task Skip(CommandContext context)
     {
         feedBack.Skip(context, audioService.GetCurrentTrack());

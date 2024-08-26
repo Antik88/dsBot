@@ -63,4 +63,23 @@ public class FeedBack : IFeedBack
             Title = $"{currentPlay.Title} skipped."
         });
     }
+
+    public Task Help(CommandContext context)
+    {
+        var prefix = DotNetEnv.Env.GetString("PREFIX");
+
+        return context.Channel.SendMessageAsync(embed: new DiscordEmbedBuilder()
+        {
+            Color = DiscordColor.DarkGray,
+            Title = "Commands",
+            Description = $"Prefix: {prefix}\n" +
+                $"Say hello: {prefix}{Constants.Commands.Hello}\n" +
+                $"Play: {prefix}{Constants.Commands.Play} <track name/link>\n" +
+                $"Leave: {prefix}{Constants.Commands.Leave}\n" +
+                $"Pause: {prefix}{Constants.Commands.Pause}\n" +
+                $"Resume: {prefix}{Constants.Commands.Resume}\n" +
+                $"Skip: {prefix}{Constants.Commands.Skip}\n" +
+                $"AnimePic: {prefix}{Constants.Commands.Girl}"
+        });
+    }
 }

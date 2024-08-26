@@ -6,7 +6,7 @@ namespace dsbot.Commands;
 
 public class ResumeCommand(IAudioService audioService, IFeedBack feedBack) : BaseCommandModule
 {
-    [Command("resume")]
+    [Command(Constants.Commands.Resume)]
     public Task Resume(CommandContext context)
     {
         feedBack.ResumePlaying(context);

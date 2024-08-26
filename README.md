@@ -1,13 +1,2 @@
 ﻿**TODO:**
- - [x] Add DI
- - [x] Implement audio service
- - [x] Set up normal HttpClient for anime api
- - [x] Give normal feedback 
- - [x] Track queue 
- - [x] Skip track 
- - [x] Pause track 
- - [ ] Track by link option 
- - [x] Processing end of track
- - [x] Disconnect bot 
- - [x] Post anime girl 
- - [x] Play music using ffmpeg, yt-dlp
+ - [ ] Auto disconnect 

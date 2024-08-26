@@ -1,3 +1,4 @@
+using dsbot.Constants;
 using dsbot.HttpClients;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -7,7 +8,7 @@ namespace dsbot.Commands;
 
 public class AnimeGirlCommand(IExternalServiceRequests<IAnimeHttpClient> animeService) : BaseCommandModule
 {
-    [Command("girl")]
+    [Command(Constants.Commands.Girl)]
     public async Task Test(CommandContext context)
     {
         var content = await animeService.GetFromService<JsonObject>("");

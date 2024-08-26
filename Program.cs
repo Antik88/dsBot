@@ -71,10 +71,10 @@ class Program
         Commands.RegisterCommands<HelloCommand>();
         Commands.RegisterCommands<LeaveCommand>();
         Commands.RegisterCommands<PlayCommand>();
-
         Commands.RegisterCommands<PauseCommand>();
         Commands.RegisterCommands<ResumeCommand>();
         Commands.RegisterCommands<SkipCommand>();
+        Commands.RegisterCommands<HelpCommand>();
 
         await Client.ConnectAsync();
         await Task.Delay(-1);

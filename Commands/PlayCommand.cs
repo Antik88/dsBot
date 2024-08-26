@@ -9,7 +9,7 @@ namespace dsbot.Commands
         IFeedBack feedBack, 
         IAudioService audioService) : BaseCommandModule
     {
-        [Command("play")]
+        [Command(Constants.Commands.Play)]
         public async Task Play(CommandContext context, [RemainingText] string query)
         {
             var connection = await connectionService.ConnectToChannel(context);

@@ -5,7 +5,7 @@ namespace dsbot.Commands;
 
 public class HelloCommand : BaseCommandModule
 {
-    [Command("hello")]
+    [Command(Constants.Commands.Hello)]
 
     public Task SayHello(CommandContext context)
     {

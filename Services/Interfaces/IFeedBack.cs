@@ -10,4 +10,5 @@ public interface IFeedBack
     Task PausePlaying(CommandContext context);
     Task ResumePlaying(CommandContext context);
     Task Skip(CommandContext context, YoutubeVideo currentPlay);
+    Task Help(CommandContext context);
 }
