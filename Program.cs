@@ -3,10 +3,13 @@ using dsbot.Constants;
 using dsbot.HttpClients;
 using dsbot.Services.Implementations;
 using dsbot.Services.Interfaces;
+using dsBot.Commands;
+using dsBot.DataContext;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.VoiceNext;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -21,6 +24,8 @@ class Program
         IHost _host = Host.CreateDefaultBuilder().ConfigureServices(
             services =>
             {
+                services.AddDbContext<ApplicationDbContext>();
+
                 services.AddSingleton<IApplication, Application>();
                 services.AddSingleton<IAudioService, AudioService>();
 
@@ -34,6 +39,12 @@ class Program
                 });
             })
             .Build();
+
+        using (var scope = _host.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            dbContext.Database.Migrate();
+        }
 
         var app = _host.Services.GetRequiredService<IApplication>();
 
@@ -76,13 +87,15 @@ class Program
         Commands.RegisterCommands<SkipCommand>();
         Commands.RegisterCommands<HelpCommand>();
 
+        Commands.RegisterCommands<PlayListCommands>();
+
         await Client.ConnectAsync();
         await Task.Delay(-1);
 
         app.Run();
     }
 
-    private static Task ClientReady(DiscordClient sender, ReadyEventArgs args) 
+    private static Task ClientReady(DiscordClient sender, ReadyEventArgs args)
     {
         return Task.CompletedTask;
     }

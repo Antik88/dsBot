@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dsbot", "dsbot.csproj", "{43D5EAC9-E851-4438-8026-FD34CFFA7B23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dsbot", "dsbot.csproj", "{A099327B-0BA8-4033-B072-0B1CE1114896}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{43D5EAC9-E851-4438-8026-FD34CFFA7B23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43D5EAC9-E851-4438-8026-FD34CFFA7B23}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43D5EAC9-E851-4438-8026-FD34CFFA7B23}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43D5EAC9-E851-4438-8026-FD34CFFA7B23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A099327B-0BA8-4033-B072-0B1CE1114896}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A099327B-0BA8-4033-B072-0B1CE1114896}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A099327B-0BA8-4033-B072-0B1CE1114896}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A099327B-0BA8-4033-B072-0B1CE1114896}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
