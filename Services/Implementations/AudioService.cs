@@ -1,8 +1,9 @@
-﻿using dsbot.Constants;
+using dsbot.Constants;
 using dsbot.Services.Interfaces;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.VoiceNext;
 using System.Diagnostics;
+using System.Text;
 using YoutubeSearchApi.Net.Models.Youtube;
 
 namespace dsbot.Services.Implementations;
@@ -12,8 +13,8 @@ public class AudioService(IFeedBack feedBack) : IAudioService
     private readonly Queue<YoutubeVideo> _playQueue = new();
     private bool _isPlaying = false;
     private bool _isPaused = false;
-    private VoiceTransmitSink _transmit;
-    private TaskCompletionSource<bool> _pauseCompletionSource;
+    private VoiceTransmitSink? _transmit;
+    private TaskCompletionSource<bool>? _pauseCompletionSource;
     private TaskCompletionSource<bool> _skipCompletionSource;
     private YoutubeVideo _currentTrack;
     private Process _ffmpegProcess;
@@ -58,22 +59,41 @@ public class AudioService(IFeedBack feedBack) : IAudioService
     private async Task<string> GetAudioStreamUrl(string videoUrl)
     {
         var ytDlpPath = ProgramsPath.ytDlpPath;
+        var cookiesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cookies.txt");
+
         var startInfo = new ProcessStartInfo
         {
             FileName = ytDlpPath,
-            Arguments = string.Format(Arguments.YtDlpArgumentsTemplate, videoUrl),
+            Arguments = $"-f ba --geo-bypass --cookies \"{cookiesPath}\" --get-url \"{videoUrl}\"",
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
-            CreateNoWindow = true
+            CreateNoWindow = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8
         };
 
-        using var process = new Process { StartInfo = startInfo };
-        process.Start();
+        try
+        {
+            using var process = new Process { StartInfo = startInfo };
+            process.Start();
 
-        var output = await process.StandardOutput.ReadToEndAsync();
-        await process.WaitForExitAsync();
-        return output.Trim();
+            var output = await process.StandardOutput.ReadToEndAsync();
+            var error = await process.StandardError.ReadToEndAsync();
+            await process.WaitForExitAsync();
+
+            if (process.ExitCode != 0 || string.IsNullOrWhiteSpace(output))
+            {
+                throw new Exception($"yt-dlp error: {error}");
+            }
+
+            return output.Trim();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting audio URL: {ex.Message}");
+            throw;
+        }
     }
 
     private async Task PlayAudio(string audioStreamUrl, VoiceTransmitSink transmit)
